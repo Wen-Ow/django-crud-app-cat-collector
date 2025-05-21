@@ -5,6 +5,7 @@ urlpatterns = [
     # we're going to define all app-level urls in this list
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
+    path('cats/', views.cat_index, name='cat-index'),
 ]
 
 
