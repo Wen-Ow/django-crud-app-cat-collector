@@ -27,25 +27,29 @@
 
 <section class="card-container">
   {% for cat in cats %}
-    <div class="card">
-      <a href="{% url 'cat-detail' cat.id %}">
+  <div class="card">
+    {% comment %} wrap card's contents in an a tag {% endcomment %}
+    {% comment %} this is a hardcoded URL, which isn't preferable. we'd rather dynamically uypdate it in case changes are made later on {% endcomment %}
+    {% comment %} <a href="/cats/{{ cat.id }}"> {% endcomment %}
+    {% comment %} Remember the name argument we passed into each path()? Django uses that name argument to dynamically generate a URL based on the name of the view. This method decouples your template code from your URL configuration. By replacing the above line with the line below, URLs can be changed in one place urls.py, and all corresponding links in templates will automatically update. {% endcomment %}
+    <a href="{% url 'cat-detail' cat.id %}">
         <div class="card-content">
-          <div class="card-img-container">
-            <img
-              src="{% static 'images/sk8r-boi-cat.svg' %}"
-              alt="A skater boy cat"
-            />
-          </div>
-          <h2 class="card-title">{{ cat.name }}</h2>
-          {% if cat.age > 0 %}
-          <p>A {{ cat.age }} year old {{ cat.breed }}</p>
-          {% else %}
-          <p>A {{ cat.breed }} kitten.</p>
-          {% endif %}
-          <p><small>{{ cat.description }}</small></p>
+            <div class="card-img-container">
+                <img
+                src="{% static 'images/sk8r-boi-cat.svg' %}"
+                alt="A skater boy cat"
+                />
+            </div>
+            <h2 class="card-title">{{ cat.name }}</h2>
+            {% if cat.age > 0 %}
+            <p>A {{ cat.age }} year old {{ cat.breed }}</p>
+            {% else %}
+            <p>A {{ cat.breed }} kitten.</p>
+            {% endif %}
+            <p><small>{{ cat.description }}</small></p>
         </div>
-      </a>
-    </div>
+    </a>
+  </div>
   {% endfor %}
 </section>
 
