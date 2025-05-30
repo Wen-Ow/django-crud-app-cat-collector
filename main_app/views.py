@@ -5,7 +5,8 @@ from django.shortcuts import render, redirect
 # bring in our Cat model (from main_app/models.py)
 # import create class-based view
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Cat
+from django.views.generic import ListView, DetailView
+from .models import Cat, Toy
 from .forms import FeedingForm
 
 # Create your views here.
@@ -55,13 +56,18 @@ def cat_index(request):
 
 def cat_detail(request, cat_id):
     cat = Cat.objects.get(id=cat_id)
+    toys_cat_doesnt_have = Toy.objects.exclude(id__in = cat.toys.all().values_list('id'))
     feeding_form = FeedingForm()
-    return render(request, 'cats/detail.html', {'cat': cat, 'feeding_form': feeding_form})
+    return render(request, 'cats/detail.html', {
+        'cat': cat,
+        'feeding_form': feeding_form,
+        'toys': toys  # Pass toys to the template
+    })
 
 # adding a class
 class CatCreate(CreateView):
     model = Cat
-    fields = '__all__'
+    fields = ['name', 'breed', 'description', 'age']
         # The fields attribute is required and can be used to limit or change the ordering of the attributes from the Cat model are generated in the ModelForm passed to the template.
         # We've taken advantage of the special '__all__' value to specify that the form should contain all of the Cat Model's attributes. Alternatively, we could have listed the fields in a list like this:
             # class CatCreate(CreateView):
@@ -92,4 +98,26 @@ def add_feeding(request, cat_id):
         new_feeding = form.save(commit=False)
         new_feeding.cat_id = cat_id
         new_feeding.save()
+    return redirect('cat-detail', cat_id=cat_id)
+
+class ToyCreate(CreateView):
+    model = Toy
+    fields = '__all__'
+
+class ToyList(ListView):
+    model = Toy
+
+class ToyDetail(DetailView):
+    model = Toy
+
+class ToyUpdate(UpdateView):
+    model = Toy
+    fields = ['name', 'color']
+
+class ToyDelete(DeleteView):
+    model = Toy
+    success_url = '/toys/'
+
+def associate_toy(request, cat_id, toy_id):
+    Cat.objects.get(id=cat_id).toys.add(toy_id)
     return redirect('cat-detail', cat_id=cat_id)
